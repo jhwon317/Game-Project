@@ -323,19 +323,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 104938414}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69ebe98896a0c7c429ea94e0b96697ed, type: 3}
+  m_Script: {fileID: 11500000, guid: 56b6025ba9eb8644682e0908ac05562e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
-  aspect: 2
+  aspect: 1
   aa: 1
-  filter: 0
+  filter: 1
   transparentBG: 1
-  sizeMode: 0
-  resolutionScale: 1
-  fixedPixels: {x: 1024, y: 1024}
-  minPixels: {x: 64, y: 64}
-  maxPixels: {x: 4096, y: 4096}
 --- !u!114 &104938419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -345,12 +340,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 104938414}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8137774fec7b4684e9c0e10ae736df09, type: 3}
+  m_Script: {fileID: 11500000, guid: 960326423cdaebf439fd76fe209aa27d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 0}
-  targetCanvas: {fileID: 0}
-  targetRaycaster: {fileID: 0}
+  targetRoot: {fileID: 0}
+  autoAssignOnEnable: 1
+  trackForAFewFrames: 1
+  autoAssignFrameBudget: 10
+  setCanvasWorldCamera: 1
 --- !u!1 &299956878
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,9 +358,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 299956880}
-  - component: {fileID: 299956879}
-  - component: {fileID: 299956883}
   - component: {fileID: 299956882}
+  - component: {fileID: 299956883}
   m_Layer: 0
   m_Name: PopupSession
   m_TagString: Untagged
@@ -370,19 +367,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &299956879
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 299956878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d94bc7e06e21be048a9a3de951576564, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Host: {fileID: 893149245}
 --- !u!4 &299956880
 Transform:
   m_ObjectHideFlags: 0
@@ -419,13 +403,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 299956878}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34e9975159fbee24786d57917a0b6162, type: 3}
+  m_Script: {fileID: 11500000, guid: e1a003f20f4ab92468cdb7f11076dec7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PanelRoot: {fileID: 299956878}
-  ContentRoot: {fileID: 1641619168}
-  Viewport: {fileID: 104938418}
-  CanvasGroup: {fileID: 299956882}
+  Host: {fileID: 893149245}
+  MiniWorldLayerName: MiniWorld
+  preventReentry: 1
 --- !u!1 &353546572
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,7 +423,6 @@ GameObject:
   - component: {fileID: 353546573}
   - component: {fileID: 353546577}
   - component: {fileID: 353546578}
-  - component: {fileID: 353546579}
   m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
@@ -573,27 +555,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 353546572}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88ad6682a1b221a469392532fd8a90a0, type: 3}
+  m_Script: {fileID: 11500000, guid: d37346754a9f0904e9326e19bb643cc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Session: {fileID: 299956879}
---- !u!114 &353546579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 353546572}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c76e477754ca2424f81bc1e643f0b815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  router: {fileID: 353546578}
-  definition: {fileID: 0}
-  prefabFallback: {fileID: 6621089284343340022, guid: f2867acd5ab3b8149b5fb4afca88ee32, type: 3}
+  session: {fileID: 299956883}
+  definition: {fileID: 11400000, guid: 3592e017b0a709246985d835a9f1ed5f, type: 2}
   jsonArgs: 
-  preventReentry: 1
 --- !u!1 &735968292
 GameObject:
   m_ObjectHideFlags: 0
@@ -822,8 +789,9 @@ GameObject:
   - component: {fileID: 893149241}
   - component: {fileID: 893149240}
   - component: {fileID: 893149239}
-  - component: {fileID: 893149245}
   - component: {fileID: 893149243}
+  - component: {fileID: 893149245}
+  - component: {fileID: 893149246}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -935,13 +903,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 893149238}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34e9975159fbee24786d57917a0b6162, type: 3}
+  m_Script: {fileID: 11500000, guid: 4ed1430b3ca93ef42a421d0e888c88b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PanelRoot: {fileID: 1550406026}
   ContentRoot: {fileID: 1641619168}
   Viewport: {fileID: 104938418}
   CanvasGroup: {fileID: 893149243}
+--- !u!114 &893149246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 893149238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231121c9dc2a59e45b14250ffbf890f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  host: {fileID: 893149245}
+  usePadding: 1
+  paddingMode: 0
+  padding: {x: 12, y: 12, z: 12, w: 12}
+  paddingPercent: {x: 0.05, y: 0.05, z: 0.05, w: 0.05}
+  contentScale: 1
+  autoFitCamera: 1
+  fitMode: 0
+  referenceAspect: 1.7777778
+  referenceOrthoSize: 5
+  cameraPaddingPct: 0.08
 --- !u!1 &1131816543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1235,7 +1226,6 @@ GameObject:
   - component: {fileID: 1550406027}
   - component: {fileID: 1550406029}
   - component: {fileID: 1550406028}
-  - component: {fileID: 1550406032}
   - component: {fileID: 1550406031}
   m_Layer: 5
   m_Name: PanelRoot
@@ -1262,7 +1252,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -400, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1550406028
 MonoBehaviour:
@@ -1277,7 +1267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1314,22 +1304,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &1550406032
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1550406026}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34e9975159fbee24786d57917a0b6162, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PanelRoot: {fileID: 1550406026}
-  ContentRoot: {fileID: 0}
-  Viewport: {fileID: 0}
-  CanvasGroup: {fileID: 1550406031}
 --- !u!1 &1641619167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1339,6 +1313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1641619168}
+  - component: {fileID: 1641619169}
   m_Layer: 5
   m_Name: ContentRoot
   m_TagString: Untagged
@@ -1366,6 +1341,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1641619169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641619167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dce087574d514f4f89f817c1e0d01bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
