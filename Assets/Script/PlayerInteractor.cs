@@ -5,51 +5,57 @@ public class PlayerInteractor : MonoBehaviour
     [Header("Scan")]
     public float scanRadius = 2.5f;
     public LayerMask interactableMask;
-    public float verticalTolerance = 1.2f; // Y 높이 차 허용(벨트스크롤용)
 
-    [Header("Input")]
-    public KeyCode interactKey = KeyCode.E;
+    // [핵심 수정!] 'private'를 'public'으로 바꾸고,
+    // 외부에서는 값을 바꿀 수 없도록 { get; private set; }을 붙여줌
+    public IInteractable currentInteractable { get; private set; }
 
-    IInteractable current;
+    // private PlayerController playerController; // 이제 PlayerController를 알 필요 없음
+
+    // void Awake() // Awake도 필요 없어짐
+    // {
+    //     playerController = GetComponent<PlayerController>();
+    // }
 
     void Update()
     {
-        var nearest = FindNearest();
-
-        if (nearest != current)
-        {
-            if (current != null) current.SetHighlighted(false);
-            current = nearest;
-            if (current != null) current.SetHighlighted(true);
-        }
-
-        if (current != null && Input.GetKeyDown(interactKey))
-            current.OnInteract(gameObject);
+        // Interactor는 정찰만 담당
+        FindNearestInteractable();
     }
 
-    IInteractable FindNearest()
+    void FindNearestInteractable()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, scanRadius, interactableMask, QueryTriggerInteraction.Collide);
+        var nearest = SearchForInteractable();
 
-        float best = float.MaxValue;
-        IInteractable pick = null;
-
-        foreach (var h in hits)
+        // 가장 가까운 대상이 바뀌었는지 확인하고 하이라이트 처리
+        if (nearest != currentInteractable)
         {
-            // 너무 높은/낮은 건 제외
-            if (Mathf.Abs(h.transform.position.y - transform.position.y) > verticalTolerance) continue;
+            if (currentInteractable != null) currentInteractable.SetHighlighted(false);
+            currentInteractable = nearest;
+            if (currentInteractable != null) currentInteractable.SetHighlighted(true);
+        }
+    }
 
-            var it = h.GetComponentInParent<IInteractable>();
-            if (it == null) continue;
-
-            float d = (it.GetTransform().position - transform.position).sqrMagnitude;
-            if (d < best)
+    IInteractable SearchForInteractable()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, scanRadius, interactableMask);
+        float bestDistance = float.MaxValue;
+        IInteractable nearestPick = null;
+        Vector3 myPositionOnGround = new Vector3(transform.position.x, 0, transform.position.z);
+        foreach (var hitCollider in hits)
+        {
+            IInteractable interactable = hitCollider.GetComponentInParent<IInteractable>();
+            if (interactable == null) continue;
+            Transform targetTransform = interactable.GetTransform();
+            Vector3 targetPositionOnGround = new Vector3(targetTransform.position.x, 0, targetTransform.position.z);
+            float distance = Vector3.Distance(myPositionOnGround, targetPositionOnGround);
+            if (distance < bestDistance)
             {
-                best = d;
-                pick = it;
+                bestDistance = distance;
+                nearestPick = interactable;
             }
         }
-        return pick;
+        return nearestPick;
     }
 
     void OnDrawGizmosSelected()
