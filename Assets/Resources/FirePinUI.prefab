@@ -322,7 +322,7 @@ MonoBehaviour:
   returnSpeed: 600
   targetGraphic: {fileID: 3828508116808674030}
   normalColor: {r: 0, g: 0, b: 0, a: 1}
-  hoverColor: {r: 0, g: 1, b: 0.20489144, a: 1}
+  hoverColor: {r: 1, g: 0.9753064, b: 0, a: 1}
   hoverScale: 1.06
   hoverLerpSpeed: 12
   sfx: {fileID: 0}

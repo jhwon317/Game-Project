@@ -97,6 +97,13 @@ namespace PopupMini
                 _cts = linked;
                 if (sess.TimeoutSec > 0f) _cts.CancelAfter(TimeSpan.FromSeconds(sess.TimeoutSec));
 
+                var timer = Host.PanelRoot ? Host.PanelRoot.GetComponentInChildren<PopupCountdown>(true) : null;
+                if (timer && sess.TimeoutSec > 0f)
+                {
+                    timer.gameObject.SetActive(true);
+                    timer.StartCountdown(sess.TimeoutSec, _cts.Token); // unscaledDeltaTime 사용 권장
+                }
+
                 using var _reg = _cts.Token.Register(() =>
                     tcs.TrySetResult(PuzzleResult.Cancel(sess.TimeoutSec > 0f ? "timeout" : "abort:external")));
 
@@ -110,6 +117,7 @@ namespace PopupMini
                 }
                 finally
                 {
+                    try { if (timer) { timer.Stop(); timer.gameObject.SetActive(false); } } catch { }
                     _inst.Controller.Completed -= OnCompleted;
                 }
             }
