@@ -345,10 +345,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 0}
   targetRoot: {fileID: 0}
+  targetCanvas: {fileID: 0}
+  targetRaycaster: {fileID: 0}
   autoAssignOnEnable: 1
   trackForAFewFrames: 1
   autoAssignFrameBudget: 10
   setCanvasWorldCamera: 1
+  verbose: 0
 --- !u!1 &299956878
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,7 +516,7 @@ Transform:
   m_GameObject: {fileID: 353546572}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.734405, y: 0.56, z: 4.77}
+  m_LocalPosition: {x: 2.734405, y: 0.56, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -559,7 +562,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   session: {fileID: 299956883}
-  definition: {fileID: 11400000, guid: 3592e017b0a709246985d835a9f1ed5f, type: 2}
+  definition: {fileID: 11400000, guid: 29ea34ceffc02a748b7a5f8ac43b02f9, type: 2}
   jsonArgs: 
 --- !u!1 &735968292
 GameObject:
@@ -946,8 +949,8 @@ GameObject:
   - component: {fileID: 1131816545}
   - component: {fileID: 1131816544}
   - component: {fileID: 1131816548}
-  - component: {fileID: 1131816549}
   - component: {fileID: 1131816550}
+  - component: {fileID: 1131816551}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1074,20 +1077,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
---- !u!114 &1131816549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1131816543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7c55d777630a28489834868bf20c8bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 7
-  jumpForce: 10
 --- !u!114 &1131816550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1104,8 +1093,23 @@ MonoBehaviour:
   interactableMask:
     serializedVersion: 2
     m_Bits: 64
-  verticalTolerance: 1.2
-  interactKey: 101
+--- !u!114 &1131816551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1131816543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2419f9de62d997c4a8a9e41025d221b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 7
+  jumpForce: 10
+  holdPoint: {fileID: 0}
+  throwForce: 15
+  heldObject: {fileID: 0}
 --- !u!1 &1347382304
 GameObject:
   m_ObjectHideFlags: 0
