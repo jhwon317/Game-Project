@@ -40,15 +40,15 @@ public class PopupCountdown : MonoBehaviour
             float dt = useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
             t = Mathf.Max(0f, t - dt);
 
-            // --- 텍스트: mm:ss.mmm ---
+            // --- 텍스트: mm:ss.xx (hundredths) ---
             if (label)
             {
-                // 반올림 대신 내림으로 “0.001초 남음” 과장 표시 방지
-                int totalMs = Mathf.Clamp((int)(t * 1000f), 0, int.MaxValue);
-                int minutes = totalMs / 60000;
-                int secondsI = (totalMs / 1000) % 60;
-                int millis = totalMs % 100;
-                label.text = $"{minutes:00}:{secondsI:00}.{millis:00}";
+                // 안정적으로 내림 표시
+                int totalHundredths = Mathf.Clamp((int)(t * 100f), 0, int.MaxValue);
+                int minutes = totalHundredths / 6000;          // 60초 * 100
+                int secondsI = (totalHundredths / 100) % 60;    // 초
+                int hundredths = totalHundredths % 100;          // 00~99
+                label.text = $"{minutes:00}:{secondsI:00}.{hundredths:00}";
             }
 
             // --- 게이지 ---
