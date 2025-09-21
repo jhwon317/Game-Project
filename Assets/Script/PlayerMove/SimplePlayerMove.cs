@@ -1,4 +1,5 @@
 using UnityEngine;
+using Game.Inventory; // for EncumbranceComponent
 
 [RequireComponent(typeof(CharacterController))]
 public class SimplePlayerMove : MonoBehaviour
@@ -14,6 +15,10 @@ public class SimplePlayerMove : MonoBehaviour
     public KeyCode sprintKey = KeyCode.LeftShift;
     public bool toggleSprint = false;    // true면 토글, false면 누르는 동안만
 
+    [Header("Interact")]
+    public KeyCode interactKey = KeyCode.E; // E키로 상호작용 (PlayerController 참고)
+    private PlayerInteractor _interactor;    // 현재 바라보는 IInteractable 접근
+
     [Header("Animation Params")]
     public Animator animator;
     public string isMovingBool = "IsMoving"; // Idle↔Locomotion 스위치
@@ -23,16 +28,33 @@ public class SimplePlayerMove : MonoBehaviour
     Vector3 _vel; // y 중력용
     bool _sprintOn; // 토글 상태 보관
 
+    // Encumbrance 연동
+    EncumbranceComponent _encum;
+
     void Awake()
     {
         _cc = GetComponent<CharacterController>();
         if (!animator) animator = GetComponentInChildren<Animator>();
         if (animator) animator.applyRootMotion = false; // CC 기반 이동 권장
+
+        _encum = GetComponent<EncumbranceComponent>();
+        _interactor = GetComponent<PlayerInteractor>(); // PlayerController의 흐름과 동일하게 E 처리
     }
 
     void Update()
     {
-        // --- 입력 읽기 ---
+        // --- 상호작용(E) ---
+        if (Input.GetKeyDown(interactKey))
+        {
+            // PlayerController에서 하던 것처럼, 손이 비어있다는 전제에서
+            // 현재 인터랙터가 가리키는 오브젝트에 OnInteract 호출
+            if (_interactor != null && _interactor.currentInteractable != null)
+            {
+                _interactor.currentInteractable.OnInteract(gameObject);
+            }
+        }
+
+        // --- 이동 입력 ---
         float h = Input.GetAxisRaw("Horizontal");
         float v = useSideView2_5D ? 0f : Input.GetAxisRaw("Vertical");
         bool hasMoveInput = (new Vector2(h, v).sqrMagnitude > 0.01f);
@@ -47,7 +69,12 @@ public class SimplePlayerMove : MonoBehaviour
             _sprintOn = Input.GetKey(sprintKey);
         }
 
-        // 이동 입력 없으면 스프린트 효과 무시
+        // 과적으로 스프린트 금지
+        if (_encum && !_encum.SprintAllowed)
+        {
+            _sprintOn = false;
+        }
+
         bool applySprint = hasMoveInput && _sprintOn;
 
         // --- 이동 방향/회전 ---
@@ -89,6 +116,9 @@ public class SimplePlayerMove : MonoBehaviour
         // --- 속도 결정 ---
         float speedMeters = 0f;
         if (hasMoveInput) speedMeters = applySprint ? sprintSpeed : walkSpeed;
+
+        // Encumbrance 속도 계수 적용
+        if (_encum) speedMeters *= _encum.SpeedScale;
 
         // --- 중력 & 이동 ---
         if (_cc.isGrounded && _vel.y < 0f) _vel.y = -2f;

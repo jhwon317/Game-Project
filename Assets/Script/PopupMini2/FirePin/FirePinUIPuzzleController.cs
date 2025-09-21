@@ -76,7 +76,7 @@ namespace PopupMini.Sample
         void HandleSuccess()
         {
             if (_finished) return; if (sfx && sfxSuccess) sfx.PlayOneShot(sfxSuccess);
-            SafeComplete(PopupMini.PuzzleResult.Ok("{\"event\":\"pin_pulled\"}"));
+            SafeComplete(PopupMini.PuzzleResult.Ok("{\"rewards\":[{\"id\":\"extinguisher\",\"count\":1}]}"));
         }
 
         void SafeComplete(PopupMini.PuzzleResult r)
