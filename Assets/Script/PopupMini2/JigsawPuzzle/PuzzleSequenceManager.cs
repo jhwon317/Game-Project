@@ -6,7 +6,10 @@ public class PuzzleSequenceManager : MonoBehaviour
 {
     [Header("연출 대상 연결")]
     public Image originalImageHolder; // 원본 그림을 보여줄 액자
-    public GameObject puzzleCore;       // 실제 퍼즐 부품들이 들어있는 오브젝트
+
+    // [수정] PuzzleCore 대신, 실제 부품들을 직접 연결
+    public GameObject puzzleFrame;      // 정답판
+    public GameObject piecesContainer;  // 조각들이 흩뿌려질 곳
 
     [Header("연출 재료 연결")]
     public Sprite fullImageSprite; // 통짜 원본 이미지
@@ -21,7 +24,8 @@ public class PuzzleSequenceManager : MonoBehaviour
     {
         // 1. 연출 시작 전, 모든 걸 숨김
         originalImageHolder.gameObject.SetActive(false);
-        puzzleCore.SetActive(false);
+        puzzleFrame.SetActive(false);
+        piecesContainer.SetActive(false);
 
         // 2. 원본 이미지를 보여줌
         originalImageHolder.sprite = fullImageSprite;
@@ -32,6 +36,12 @@ public class PuzzleSequenceManager : MonoBehaviour
 
         // 4. 원본 이미지를 숨기고, 실제 퍼즐을 시작시킴
         originalImageHolder.gameObject.SetActive(false);
-        puzzleCore.SetActive(true);
+        puzzleFrame.SetActive(true);
+        piecesContainer.SetActive(true);
+
+        // [수정] PuzzleCore를 켤 필요 없이, 퍼즐 제작자가 바로 일을 시작함
+        GetComponentInChildren<JigsawPuzzleController>().enabled = true;
     }
+
+
 }
