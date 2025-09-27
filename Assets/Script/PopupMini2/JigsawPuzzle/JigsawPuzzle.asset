@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f601e2d3982ed3145bf87e24a896186a, type: 3}
-  m_Name: JigsawPuzzle_Def
+  m_Name: JigsawPuzzle
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 4642362166692205261, guid: 42e0ef28c4c9684468ffaf5bf0a50897, type: 3}
+  Prefab: {fileID: 5281803409476263635, guid: f3ab993a58575534ca1ec21d906ad3fe, type: 3}
   AspectMode: 1
   Aspect: 0
   AntiAliasing: 1

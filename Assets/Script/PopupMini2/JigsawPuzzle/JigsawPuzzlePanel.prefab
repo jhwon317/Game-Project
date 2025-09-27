@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5677424451658186720}
   - component: {fileID: 5535623594246215830}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: PuzzleFrame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,6 +60,37 @@ MonoBehaviour:
   m_Spacing: {x: 5, y: 5}
   m_Constraint: 1
   m_ConstraintCount: 3
+--- !u!1 &3593619928782717707
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3053307885923119143}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3053307885923119143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3593619928782717707}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -365, y: 2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2066866019820925068}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4642362166692205261
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +105,7 @@ GameObject:
   - component: {fileID: 2353841010086170578}
   - component: {fileID: 798709762526681715}
   - component: {fileID: 3798463044108327877}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: JigsawPuzzlePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,9 +125,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3477800760066088467}
-  - {fileID: 5228172947889333794}
   - {fileID: 5677424451658186720}
   - {fileID: 2006371551324461253}
+  - {fileID: 5228172947889333794}
+  - {fileID: 3053307885923119143}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -208,8 +240,8 @@ GameObject:
   - component: {fileID: 5228172947889333794}
   - component: {fileID: 145542537441686795}
   - component: {fileID: 8106830783633455512}
-  m_Layer: 0
-  m_Name: Camera
+  m_Layer: 7
+  m_Name: PuzzleCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -336,7 +368,7 @@ GameObject:
   - component: {fileID: 3477800760066088467}
   - component: {fileID: 7985823090558088907}
   - component: {fileID: 9187800833207106819}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Original
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +441,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2006371551324461253}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: PiecesContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
