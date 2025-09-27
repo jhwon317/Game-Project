@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f601e2d3982ed3145bf87e24a896186a, type: 3}
   m_Name: JigsawPuzzle
   m_EditorClassIdentifier: 
-  Prefab: {fileID: 5281803409476263635, guid: f3ab993a58575534ca1ec21d906ad3fe, type: 3}
+  Prefab: {fileID: 8976735377988904322, guid: f3ab993a58575534ca1ec21d906ad3fe, type: 3}
   AspectMode: 1
   Aspect: 0
   AntiAliasing: 1

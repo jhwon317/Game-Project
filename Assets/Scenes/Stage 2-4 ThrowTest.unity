@@ -1199,11 +1199,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1246806239233524425, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -400
       objectReference: {fileID: 0}
     - target: {fileID: 1246806239233524425, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 1246806239233524425, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -1301,10 +1301,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5556155306324006485, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
+      propertyPath: trackForAFewFrames
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 858337607198176708, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1720486934}
   m_SourcePrefab: {fileID: 100100000, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
 --- !u!1001 &1703852129
 PrefabInstance:
@@ -1363,6 +1370,25 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d60e7ce21c320844991c2af7e6ed0ae9, type: 3}
+--- !u!1 &1720486928 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 858337607198176708, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
+  m_PrefabInstance: {fileID: 1631462412}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1720486934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1720486928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 3
+  m_AspectRatio: 1
 --- !u!1 &1734528318
 GameObject:
   m_ObjectHideFlags: 0
