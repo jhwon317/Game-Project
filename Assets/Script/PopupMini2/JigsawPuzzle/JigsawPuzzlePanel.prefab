@@ -31,10 +31,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2066866019820925068}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 320, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5535623594246215830
 MonoBehaviour:
@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 2353841010086170578}
   - component: {fileID: 798709762526681715}
   - component: {fileID: 3798463044108327877}
+  - component: {fileID: 483666306207613984}
   m_Layer: 7
   m_Name: JigsawPuzzlePanel
   m_TagString: Untagged
@@ -131,10 +132,10 @@ RectTransform:
   - {fileID: 3053307885923119143}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 450, y: 0}
-  m_SizeDelta: {x: 640, y: 640}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -320, y: 0}
+  m_SizeDelta: {x: 320, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1108844646460933380
 CanvasRenderer:
@@ -229,6 +230,26 @@ MonoBehaviour:
   puzzleFrame: {fileID: 5677424451658186720}
   piecesContainer: {fileID: 2006371551324461253}
   gridSprite: {fileID: 1913952152, guid: d0e7eea6da0557047a80fa969ea9bd5e, type: 3}
+--- !u!114 &483666306207613984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4642362166692205261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6dd54d1cba12e141b18ed461e13f09c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  applyTransformHints: 1
+  rectMode: 1
+  fixedPixelSize: {x: 640, y: 640}
+  raw_anchorMin: {x: 0.1, y: 0.1}
+  raw_anchorMax: {x: 0.9, y: 0.9}
+  raw_offsetMin: {x: 0, y: 0}
+  raw_offsetMax: {x: 0, y: 0}
+  contentScale: 1.15
 --- !u!1 &6227021585954504826
 GameObject:
   m_ObjectHideFlags: 0

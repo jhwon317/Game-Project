@@ -540,7 +540,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   piecePrefab: {fileID: 6347437884889383023, guid: 48eb99b2edb7152469f41269ab29224e, type: 3}
-  slicedSprites: []
+  slicedSprites:
+  - {fileID: 1687873847, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: -489540447, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: 2084805528, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: 923734954, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: 296949337, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: 928436068, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: -48149931, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: -1048549385, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
+  - {fileID: 1569079599, guid: a8913cff86318bd4f8f09457167c8f6a, type: 3}
   puzzleFrame: {fileID: 1757814918707419494}
   piecesContainer: {fileID: 665838381979138110}
   gridSprite: {fileID: 1913952152, guid: d0e7eea6da0557047a80fa969ea9bd5e, type: 3}
