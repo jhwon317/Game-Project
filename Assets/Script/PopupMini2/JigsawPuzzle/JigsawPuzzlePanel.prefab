@@ -34,7 +34,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 320, y: 320}
+  m_SizeDelta: {x: 640, y: 640}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5535623594246215830
 MonoBehaviour:
@@ -103,9 +103,7 @@ GameObject:
   - component: {fileID: 1108844646460933380}
   - component: {fileID: 4705078682675934812}
   - component: {fileID: 2353841010086170578}
-  - component: {fileID: 798709762526681715}
   - component: {fileID: 3798463044108327877}
-  - component: {fileID: 483666306207613984}
   m_Layer: 7
   m_Name: JigsawPuzzlePanel
   m_TagString: Untagged
@@ -158,7 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.39215687}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -191,19 +189,6 @@ MonoBehaviour:
   puzzleFrame: {fileID: 2293694804043709416}
   piecesContainer: {fileID: 8082328738118887675}
   fullImageSprite: {fileID: 21300000, guid: 1956fb2dbad2a8844ad885f426c45b34, type: 3}
---- !u!114 &798709762526681715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4642362166692205261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1a441164242bb94a87db389e951d360, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  puzzleController: {fileID: 3798463044108327877}
 --- !u!114 &3798463044108327877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,26 +215,6 @@ MonoBehaviour:
   puzzleFrame: {fileID: 5677424451658186720}
   piecesContainer: {fileID: 2006371551324461253}
   gridSprite: {fileID: 1913952152, guid: d0e7eea6da0557047a80fa969ea9bd5e, type: 3}
---- !u!114 &483666306207613984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4642362166692205261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6dd54d1cba12e141b18ed461e13f09c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  applyTransformHints: 1
-  rectMode: 1
-  fixedPixelSize: {x: 640, y: 640}
-  raw_anchorMin: {x: 0.1, y: 0.1}
-  raw_anchorMax: {x: 0.9, y: 0.9}
-  raw_offsetMin: {x: 0, y: 0}
-  raw_offsetMax: {x: 0, y: 0}
-  contentScale: 1.15
 --- !u!1 &6227021585954504826
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,8 +257,8 @@ Camera:
   m_GameObject: {fileID: 6227021585954504826}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 4
+  m_BackGroundColor: {r: 0.39861944, g: 0.5982478, b: 0.91194963, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0

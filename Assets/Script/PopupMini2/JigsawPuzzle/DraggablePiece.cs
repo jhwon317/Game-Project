@@ -1,28 +1,35 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class DraggablePiece : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public Transform correctParent;
 
-    [Tooltip("이 거리 안으로 들어와야 정답으로 인정됩니다.")]
-    public float snapDistance = 150f; // [핵심 수정!] 판정 거리를 150으로 늘리고, 인스펙터에서 조절 가능하게 함
-
+    // [핵심 수정!] 모든 방(함수)에서 쓸 수 있도록 '공용 거실'에 변수들을 만듦
     private Vector3 startPosition;
     private Transform originalParent;
+    private int originalSiblingIndex;
+
     private CanvasGroup canvasGroup;
+    private Image image;
 
     void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        originalParent = transform.parent;
+        image = GetComponent<Image>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        // 이제는 새로 만드는 게 아니라, 공용 변수에 값을 저장만 함
+        originalParent = transform.parent;
         startPosition = transform.position;
+        originalSiblingIndex = transform.GetSiblingIndex();
+
         canvasGroup.blocksRaycasts = false;
         transform.SetParent(transform.root);
+        transform.SetAsLastSibling();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -34,24 +41,20 @@ public class DraggablePiece : MonoBehaviour, IBeginDragHandler, IDragHandler, IE
     {
         canvasGroup.blocksRaycasts = true;
 
-        float distance = Vector3.Distance(transform.position, correctParent.position);
-
-        // [탐정!] 현재 거리와 판정 거리를 콘솔에 보고
-        Debug.Log($"'{name}' 조각 놓음! 정답과의 거리: {distance} (판정 기준: {snapDistance} 미만)");
-
-        // 만약 정답 위치와 충분히 가깝다면
-        if (distance < snapDistance)
+        if (Vector3.Distance(transform.position, correctParent.position) < 100f)
         {
             transform.SetParent(correctParent);
             transform.position = correctParent.position;
-            enabled = false;
-            FindObjectOfType<JigsawPuzzleController>().PiecePlaced();
+            image.raycastTarget = false;
+
+            GetComponentInParent<JigsawPuzzleController>().PiecePlaced();
         }
         else
         {
-            // 정답 위치가 아니면 원래 있던 자리로 되돌아감
+            // 이제 다른 방에서도 공용 변수를 자유롭게 쓸 수 있음
             transform.SetParent(originalParent);
             transform.position = startPosition;
+            transform.SetSiblingIndex(originalSiblingIndex);
         }
     }
 }

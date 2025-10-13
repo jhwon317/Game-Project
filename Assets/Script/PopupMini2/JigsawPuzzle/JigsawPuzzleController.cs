@@ -45,13 +45,14 @@ public class JigsawPuzzleController : MonoBehaviour
         List<GameObject> pieces = new List<GameObject>();
         for (int i = 0; i < slicedSprites.Length; i++)
         {
+            // [핵심 수정!] 조각의 출생지를 'PiecesContainer'로 정확히 지정!
             GameObject newPiece = Instantiate(piecePrefab, piecesContainer);
             newPiece.name = $"Piece_{i}";
             newPiece.GetComponent<Image>().sprite = slicedSprites[i];
-            // 조각에게 "네 정답 위치는 너랑 번호가 똑같은 저기야!" 하고 짝을 맺어줌
             newPiece.GetComponent<DraggablePiece>().correctParent = puzzleFrame.GetChild(i);
             pieces.Add(newPiece);
         }
+
 
         // 짝을 다 맺어준 다음에, 조각들의 '순서'만 섞음
         for (int i = 0; i < pieces.Count; i++)
@@ -76,8 +77,16 @@ public class JigsawPuzzleController : MonoBehaviour
         {
             Debug.Log("퍼즐 클리어!");
 
-            // "저 다 풀었어요!" 하고 방송함
-            OnPuzzleSolved?.Invoke();
+            // [핵심 수정!] 씬에 있는 '총감독' PopupManager를 찾아서 HidePopup 함수를 호출
+            PopupManager popupManager = FindObjectOfType<PopupManager>();
+            if (popupManager != null)
+            {
+                popupManager.HidePopup();
+            }
+            else
+            {
+                Debug.LogError("씬에 PopupManager가 없습니다!");
+            }
         }
     }
 }

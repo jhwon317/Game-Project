@@ -31,8 +31,8 @@ public class PuzzleSequenceManager : MonoBehaviour
         originalImageHolder.sprite = fullImageSprite;
         originalImageHolder.gameObject.SetActive(true);
 
-        // 3. 3초 기다림
-        yield return new WaitForSeconds(3f);
+        // 3. 2초 기다림 (진짜 시계 기준)
+        yield return new WaitForSecondsRealtime(2f);
 
         // 4. 원본 이미지를 숨기고, 실제 퍼즐을 시작시킴
         originalImageHolder.gameObject.SetActive(false);
