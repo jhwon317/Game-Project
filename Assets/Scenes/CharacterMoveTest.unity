@@ -119,38 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &33084967 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2961952483236566319, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
-  m_PrefabInstance: {fileID: 768689493}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &33084968 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 210905499065626649, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
   m_PrefabInstance: {fileID: 768689493}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 33084967}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4ed1430b3ca93ef42a421d0e888c88b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &33084975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 33084967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2d767fa4fa953040bd327102eab2f0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scanRadius: 2.5
-  interactableMask:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!1001 &167684510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -480,10 +459,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2961952483236566319, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 33084975}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}
 --- !u!1 &1023005258 stripped
 GameObject:
