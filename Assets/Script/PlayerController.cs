@@ -1,12 +1,3 @@
-// PlayerController.cs  (SimpleMove 스타일 + 호환 API 복구)
-// - 이동/회전/애니메이션: SimplePlayerMove 방식
-// - ExtinguisherUI/Helper가 기대하는 API 제공:
-//     * public GameObject heldObject { get; }
-//     * public ExtinguisherItem EquippedExtinguisher { get; }
-//     * public bool EnterExtinguisherMode(ExtinguisherItem item)
-//     * public void ExitExtinguisherMode(bool destroyExtinguisher = true)
-// - 기존 Enter/ExitExtinguisherMode() (파라미터 없는 버전)도 유지
-
 using UnityEngine;
 using Game.Inventory; // EncumbranceComponent
 
@@ -17,8 +8,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Move")]
-    public bool useSideView2_5D = false; // 2.5D면 좌우만
+    [Header("Move (Simple style)")]
+    public bool useSideView2_5D = false;
     public float walkSpeed = 3.5f;
     public float sprintSpeed = 6.5f;
     public float rotateSpeed = 540f;
@@ -26,37 +17,30 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sprint")]
     public KeyCode sprintKey = KeyCode.LeftShift;
-    public bool toggleSprint = false;    // true: 토글, false: 누르는 동안만
+    public bool toggleSprint = false;
 
     [Header("Interact")]
     public KeyCode interactKey = KeyCode.E;
     private PlayerInteractor _interactor;
 
-    [Header("Animation Params")]
+    [Header("Animation")]
     public Animator animator;
-    public string isMovingBool = "IsMoving"; // bool
-    public string speedInt = "Speed";        // int (0=Idle,1=Walk,2=Run)
+    public string isMovingBool = "IsMoving";
+    public string speedInt = "Speed";
+    public string isExtModeBool = "IsExtinguisherMode";
+    public string sprayBool = "Spray";
 
-    // ---- Extinguisher ----
     [Header("Extinguisher")]
-    public ExtinguisherController extinguisher;         // 실제 분사 컨트롤러
-    public string isExtModeBool = "IsExtinguisherMode"; // 선택 파라미터
-    public string sprayBool = "Spray";               // 선택 파라미터
-
-    // === Helper/UI 호환을 위한 공개 프로퍼티 ===
+    public ExtinguisherController extinguisher;       // 플레이어 자식에 하나 존재
     public ExtinguisherItem EquippedExtinguisher { get; private set; }
     public GameObject heldObject => EquippedExtinguisher ? EquippedExtinguisher.gameObject : null;
-
     public bool IsInExtinguisherMode { get; private set; }
-    bool _spraying;
 
-    // ---- Internal ----
+    // internal
     CharacterController _cc;
-    Vector3 _vel;
-    bool _sprintOn;
     EncumbranceComponent _encum;
-
-    // Animator parameter guards
+    Vector3 _vel;
+    bool _sprintOn, _spraying;
     bool _hasIsMoving, _hasSpeedInt, _hasIsExtMode, _hasSpray;
 
     void Awake()
@@ -83,25 +67,25 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // --- 상호작용(E) ---
+        // Interact
         if (Input.GetKeyDown(interactKey))
         {
             if (_interactor != null && _interactor.currentInteractable != null)
                 _interactor.currentInteractable.OnInteract(gameObject);
         }
 
-        // --- 입력 ---
+        // Move input
         float h = Input.GetAxisRaw("Horizontal");
         float v = useSideView2_5D ? 0f : Input.GetAxisRaw("Vertical");
         bool hasMoveInput = (new Vector2(h, v).sqrMagnitude > 0.01f);
 
-        // --- 스프린트 ---
+        // Sprint
         if (toggleSprint) { if (Input.GetKeyDown(sprintKey)) _sprintOn = !_sprintOn; }
         else _sprintOn = Input.GetKey(sprintKey);
         if (_encum && !_encum.SprintAllowed) _sprintOn = false;
         bool applySprint = hasMoveInput && _sprintOn;
 
-        // --- 이동 방향/회전 (Simple 스타일) ---
+        // Direction & rotate
         Vector3 moveDir = Vector3.zero;
         if (hasMoveInput)
         {
@@ -137,11 +121,12 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // --- 속도/중력/이동 ---
+        // Speed
         float speedMeters = 0f;
         if (hasMoveInput) speedMeters = applySprint ? sprintSpeed : walkSpeed;
         if (_encum) speedMeters *= _encum.SpeedScale;
 
+        // Gravity & move
         if (_cc.isGrounded && _vel.y < 0f) _vel.y = -2f;
         _vel.y += gravity * Time.deltaTime;
 
@@ -149,10 +134,10 @@ public class PlayerController : MonoBehaviour
         Vector3 motion = horizontal * Time.deltaTime + _vel * Time.deltaTime;
         _cc.Move(motion);
 
-        // --- 소화기 분사 ---
+        // Extinguisher
         HandleExtinguisher();
 
-        // --- 애니메이션 ---
+        // Anim
         if (animator)
         {
             if (_hasIsMoving) animator.SetBool(isMovingBool, hasMoveInput);
@@ -166,10 +151,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // ===== Extinguisher =====
+    // ===== Extinguisher helpers =====
+    void EnsureExtinguisherBound()
+    {
+        if (!extinguisher) extinguisher = GetComponentInChildren<ExtinguisherController>(true);
+        if (!extinguisher) { Debug.LogError("[PC] No ExtinguisherController under player"); return; }
+
+        if (!extinguisher.emitter)
+            extinguisher.emitter = extinguisher.GetComponentInChildren<SprayEmitter>(true);
+
+        // ExtinguisherController.player(Transform) 필드가 있으면 채움
+        var fld = typeof(ExtinguisherController).GetField("player");
+        if (fld != null) fld.SetValue(extinguisher, this.transform);
+    }
+
     void HandleExtinguisher()
     {
-        if (!IsInExtinguisherMode || !extinguisher) return;
+        if (IsInExtinguisherMode && extinguisher == null) EnsureExtinguisherBound();
+        if (!IsInExtinguisherMode || extinguisher == null) return;
 
         bool pressed = false, released = false;
 
@@ -206,56 +205,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // ===== 모드 API (ExtinguisherHelper/ExtinguisherUI 호환) =====
-
-    // Helper가 호출하는 버전 (ExtinguisherItem을 넘겨줌)
+    // ===== Mode API (Helper/UI 호환) =====
     public bool EnterExtinguisherMode(ExtinguisherItem item)
     {
-        if (!item || !item.controller)
-        {
-            Debug.LogError("[PlayerController] EnterExtinguisherMode(item): invalid item/controller");
-            return false;
-        }
-        if (IsInExtinguisherMode)
-        {
-            Debug.LogWarning("[PlayerController] already in extinguisher mode");
-            return false;
-        }
-
+        if (item && item.controller) extinguisher = item.controller;
         EquippedExtinguisher = item;
-        extinguisher = item.controller;
-
         IsInExtinguisherMode = true;
+        EnsureExtinguisherBound();
         if (_hasIsExtMode && animator) animator.SetBool(isExtModeBool, true);
-        Debug.Log("[PlayerController] EnterExtinguisherMode(item) OK");
-        return true;
+        return extinguisher != null;
     }
 
-    // 파라미터 없는 버전(기존 코드 호환/디버그)
     public void EnterExtinguisherMode()
     {
         IsInExtinguisherMode = true;
+        EnsureExtinguisherBound();
         if (_hasIsExtMode && animator) animator.SetBool(isExtModeBool, true);
-        Debug.Log("[PlayerController] EnterExtinguisherMode()");
     }
 
-    // Helper가 호출하는 시그니처 (destroyExtinguisher 옵션)
-    public void ExitExtinguisherMode(bool destroyExtinguisher = true)
+    public void ExitExtinguisherMode(bool destroyExtinguisher = false)
     {
-        if (!IsInExtinguisherMode && !EquippedExtinguisher)
-        {
-            // 이미 꺼져 있어도 정리는 진행
-        }
-
-        // 분사 정지
         if (_spraying && extinguisher) extinguisher.StopSpraying();
         _spraying = false;
 
-        // 애니 상태
         if (_hasIsExtMode && animator) animator.SetBool(isExtModeBool, false);
         if (_hasSpray && animator) animator.SetBool(sprayBool, false);
 
-        // 파괴 옵션 처리
         if (destroyExtinguisher && EquippedExtinguisher)
         {
             var go = EquippedExtinguisher.gameObject;
@@ -263,15 +238,11 @@ public class PlayerController : MonoBehaviour
             if (go) Destroy(go);
             extinguisher = null;
         }
-
-        // 해제만 하고 보존하는 경우
-        if (!destroyExtinguisher)
+        else
         {
             EquippedExtinguisher = null;
-            extinguisher = null;
         }
 
         IsInExtinguisherMode = false;
-        Debug.Log("[PlayerController] ExitExtinguisherMode()");
     }
 }

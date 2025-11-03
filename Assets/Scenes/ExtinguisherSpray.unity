@@ -1042,10 +1042,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1228964192}
   emitter: {fileID: 1530076066}
+  nozzle: {fileID: 0}
+  emitterTypeName: SprayEmitter
+  nozzleNameHint: nozzle
   tankMax: 12
   tankCurrent: 12
   flowRate: 1
-  sprayLoop: {fileID: 0}
+  sprayLoop: {fileID: 1947327116}
+  spraySfx: {fileID: 0}
 --- !u!95 &1228964203 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 171f986c196057343939a739e42b6eb8, type: 3}
@@ -1101,9 +1105,9 @@ MonoBehaviour:
   animator: {fileID: 1228964203}
   isMovingBool: IsMoving
   speedInt: Speed
-  extinguisher: {fileID: 1228964202}
   isExtModeBool: IsExtinguisherMode
   sprayBool: Spray
+  extinguisher: {fileID: 1228964202}
 --- !u!114 &1418163046 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 210905499065626649, guid: 98a73126f24470f44895e7e9167aba1d, type: 3}

@@ -1,112 +1,187 @@
 using UnityEngine;
+using System;
+using System.Linq;
 
-/// <summary>
-/// 소화기 분사 제어. 탱크 관리, 입력 처리, 오디오 제어
-/// PlayerController에서 TrySpraying()을 호출해서 사용
-/// </summary>
-[DisallowMultipleComponent]
 public class ExtinguisherController : MonoBehaviour
 {
     [Header("References")]
-    [Tooltip("분사 방향 기준 (보통 플레이어)")]
-    public Transform player;
-    [Tooltip("실제 분사 물리를 담당하는 컴포넌트")]
-    public SprayEmitter emitter;
+    public Transform player;                 // 선택(없어도 됨)
+    public SprayEmitter emitter;             // ★ 목표: 절대 null 안 되게
+    public Transform nozzle;                 // 분사 원점/방향(없으면 자동 추적)
 
-    [Header("Tank")]
-    [Tooltip("탱크 최대 용량 (초)")]
+    [Tooltip("이름 단서(타입명이 다를 때 반사 탐색)")]
+    public string emitterTypeName = "SprayEmitter";
+    [Tooltip("노즐 오브젝트 이름 단서(포함 일치)")]
+    public string nozzleNameHint = "nozzle";
+
+    [Header("Tank/Flow")]
     public float tankMax = 12f;
-    [Tooltip("현재 남은 용량 (초)")]
     public float tankCurrent = 12f;
-    [Tooltip("초당 소모량")]
     public float flowRate = 1f;
 
-    [Header("Audio")]
-    public AudioSource sprayLoop;
+    [Header("Audio/VFX (optional)")]
+    public ParticleSystem sprayLoop;
+    public AudioSource spraySfx;
 
-    private bool _isSpraying = false;
+    // UI 호환
+    public float TankMax => tankMax;
+    public float TankCurrent => tankCurrent;
+    public float TankPercent => Mathf.Clamp01(tankMax > 0f ? tankCurrent / tankMax : 0f);
+    public event Action<float, float> OnTankChanged;
 
+    bool _isSpraying;
     public bool CanSpray => tankCurrent > 0.05f;
-    public float TankPercent => tankMax > 0 ? Mathf.Clamp01(tankCurrent / tankMax) : 0f;
-    public bool IsSpraying => _isSpraying;
+
+    void OnValidate()
+    {
+        tankMax = Mathf.Max(0f, tankMax);
+        if (tankMax > 0f) tankCurrent = Mathf.Clamp(tankCurrent, 0f, tankMax);
+    }
 
     void Awake()
     {
-        // 자동 참조 설정
-        if (!player)
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        if (!player) player = transform;
+        if (!sprayLoop) sprayLoop = GetComponentInChildren<ParticleSystem>(true);
+
+        // 1) 자식 트리에서 즉시 시도
+        if (!emitter) emitter = GetComponentInChildren<SprayEmitter>(true);
+        if (!nozzle) nozzle = FindNozzleTransform();
+
+        // 2) 타입명이 달라서 못 잡는 경우 반사 탐색
         if (!emitter)
-            emitter = GetComponentInChildren<SprayEmitter>();
-
-        tankCurrent = tankMax;
-    }
-
-    void OnDisable()
-    {
-        // 비활성화되면 분사 중지
-        StopSpraying();
-    }
-
-    /// <summary>
-    /// 분사 시도. PlayerController에서 매 프레임 호출
-    /// </summary>
-    public void TrySpraying(float deltaTime)
-    {
-        Debug.Log("[ExtinguisherController] TrySpraying called");
-        if (!CanSpray || !emitter || !player)
         {
-            StopSpraying();
-            return;
+            var any = ResolveEmitterAny();
+            if (any is SprayEmitter se) emitter = se;
         }
 
-        // 분사 시작
+        // 3) 그래도 없으면 씬 전체에서 가장 가까운 SprayEmitter 하나 물고오자(디버그 방어용)
+        if (!emitter)
+        {
+            var all = FindObjectsOfType<SprayEmitter>(true);
+            if (all != null && all.Length > 0)
+            {
+                emitter = all.OrderBy(se => (se.transform.position - transform.position).sqrMagnitude).FirstOrDefault();
+                Debug.LogWarning($"[Ext] emitter not found under player → picked nearest in scene: {emitter?.name}");
+            }
+        }
+
+        // 초기 보정
+        if (tankMax <= 0f) tankMax = Mathf.Max(1f, tankCurrent);
+        tankCurrent = Mathf.Clamp(tankCurrent, 0f, tankMax);
+        RaiseTankChanged();
+
+        Debug.Log($"[Ext] Awake bind: emitter={(emitter ? emitter.name : "null")} nozzle={(nozzle ? nozzle.name : "null")}");
+    }
+
+    Transform FindNozzleTransform()
+    {
+        // 우선 emitter가 있으면 그 트랜스폼
+        if (emitter) return emitter.nozzle ? emitter.nozzle : emitter.transform;
+
+        // 이름 단서로 자식 검색
+        foreach (var t in GetComponentsInChildren<Transform>(true))
+        {
+            if (!t) continue;
+            if (!string.IsNullOrEmpty(nozzleNameHint) &&
+                t.name.IndexOf(nozzleNameHint, StringComparison.OrdinalIgnoreCase) >= 0)
+                return t;
+        }
+        // 실패 시 자기 자신
+        return this.transform;
+    }
+
+    Component ResolveEmitterAny()
+    {
+        // 현재 트리에서 타입명이 "SprayEmitter"인 컴포넌트 탐색(네임스페이스 달라도 OK)
+        foreach (var mb in GetComponentsInChildren<MonoBehaviour>(true))
+        {
+            if (!mb) continue;
+            var tn = mb.GetType().Name;
+            if (tn == emitterTypeName || tn.IndexOf("SprayEmitter", StringComparison.OrdinalIgnoreCase) >= 0)
+                return mb;
+        }
+        return null;
+    }
+
+    public void TrySpraying(float deltaTime)
+    {
+        // 매 프레임 바인딩 재확인 (런타임 활성화/비활성 전환 대응)
+        if (!emitter) emitter = GetComponentInChildren<SprayEmitter>(true);
+        if (!emitter)
+        {
+            var any = ResolveEmitterAny();
+            if (any is SprayEmitter se) emitter = se;
+        }
+        if (!emitter)
+        {
+            // 최후 방어: 씬 전체에서 최근접 잡기
+            var all = FindObjectsOfType<SprayEmitter>(true);
+            if (all != null && all.Length > 0)
+                emitter = all.OrderBy(se => (se.transform.position - transform.position).sqrMagnitude).FirstOrDefault();
+        }
+
+        if (!emitter)
+        {
+            StopSpraying();
+            Debug.LogError("[Ext] emitter missing (can’t find SprayEmitter anywhere)");
+            return;
+        }
+        if (!CanSpray) { StopSpraying(); return; }
+
         if (!_isSpraying)
         {
             _isSpraying = true;
-            if (sprayLoop && !sprayLoop.isPlaying)
-                sprayLoop.Play();
+            if (sprayLoop && !sprayLoop.isPlaying) sprayLoop.Play();
+            if (spraySfx && !spraySfx.isPlaying) spraySfx.Play();
         }
 
-        Debug.Log("[ExtinguisherController] Spraying...");
-        // 실제 분사 (SprayEmitter에게 위임)
-        emitter.Spray(player.forward, deltaTime);
+        if (!nozzle) nozzle = FindNozzleTransform();
+
+        // ★ 너가 준 SprayEmitter 시그니처: Spray(Vector3 direction, float deltaTime)
+        Vector3 dir = nozzle ? nozzle.forward : transform.forward;
+        float dt = Mathf.Max(0.0001f, deltaTime);
+        emitter.Spray(dir, dt);
 
         // 탱크 소모
-        tankCurrent = Mathf.Max(0f, tankCurrent - flowRate * deltaTime);
+        float before = tankCurrent;
+        tankCurrent = Mathf.Clamp(tankCurrent - flowRate * dt, 0f, tankMax);
+        if (!Mathf.Approximately(before, tankCurrent)) RaiseTankChanged();
 
-        // 탱크 고갈 시 자동 정지
-        if (tankCurrent <= 0.05f)
-            StopSpraying();
+        if (tankCurrent <= 0.05f) StopSpraying();
     }
 
-    /// <summary>
-    /// 분사 중지
-    /// </summary>
     public void StopSpraying()
     {
-        if (!_isSpraying) return;
-        _isSpraying = false;
-
-        if (emitter) emitter.StopVFX();
-        if (sprayLoop && sprayLoop.isPlaying) sprayLoop.Stop();
+        if (_isSpraying)
+        {
+            _isSpraying = false;
+            if (sprayLoop && sprayLoop.isPlaying)
+                sprayLoop.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            if (spraySfx && spraySfx.isPlaying)
+                spraySfx.Stop();
+        }
     }
 
-    /// <summary>
-    /// 탱크 리필 (디버그/치트용)
-    /// </summary>
-    public void Refill()
+    public void RefillAll() => SetTank(tankMax);
+
+    public void SetTank(float value)
     {
-        tankCurrent = tankMax;
+        float v = Mathf.Clamp(value, 0f, Mathf.Max(0.0001f, tankMax));
+        if (!Mathf.Approximately(tankCurrent, v))
+        {
+            tankCurrent = v;
+            RaiseTankChanged();
+        }
     }
 
-#if UNITY_EDITOR
-    void OnDrawGizmos()
+    public void SetTankMax(float newMax, bool keepPercent = true)
     {
-        if (!player) return;
-
-        // 분사 방향 표시
-        Gizmos.color = _isSpraying ? Color.cyan : Color.gray;
-        Gizmos.DrawRay(transform.position, player.forward * 2f);
+        newMax = Mathf.Max(0.01f, newMax);
+        float percent = TankPercent;
+        tankMax = newMax;
+        tankCurrent = keepPercent ? percent * tankMax : Mathf.Min(tankCurrent, tankMax);
+        RaiseTankChanged();
     }
-#endif
+
+    void RaiseTankChanged() => OnTankChanged?.Invoke(tankCurrent, TankPercent);
 }
