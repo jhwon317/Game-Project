@@ -21,64 +21,59 @@ public static class ExtinguisherHelper
             return false;
         }
 
-        // 이미 소화기 모드면 실패
         if (player.IsInExtinguisherMode)
         {
             Debug.LogWarning("[ExtinguisherHelper] Already in extinguisher mode!");
             return false;
         }
 
-        // 소화기 생성
-        ExtinguisherItem extinguisher = null;
+        // 1) 소화기 오브젝트 확보 (프리팹 → 인스턴스 or 런타임 생성)
+        GameObject go = null;
+        ExtinguisherItem item = null;
+        ExtinguisherController ctrl = null;
 
         if (extinguisherPrefab != null)
         {
-            // 프리팹으로 생성
-            var obj = Object.Instantiate(extinguisherPrefab, player.transform.position, Quaternion.identity);
-            extinguisher = obj.GetComponent<ExtinguisherItem>();
+            go = Object.Instantiate(extinguisherPrefab);
+            if (!go) { Debug.LogError("[ExtinguisherHelper] Instantiate failed"); return false; }
 
-            if (!extinguisher)
-            {
-                Debug.LogError("[ExtinguisherHelper] Prefab has no ExtinguisherItem component!");
-                Object.Destroy(obj);
-                return false;
-            }
+            item = go.GetComponent<ExtinguisherItem>() ?? go.AddComponent<ExtinguisherItem>();
+            ctrl = go.GetComponent<ExtinguisherController>() ?? go.AddComponent<ExtinguisherController>();
+            // (선택) 프리팹에 Rigidbody 없으면 추가
+            var rb = go.GetComponent<Rigidbody>() ?? go.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
         }
         else
         {
-            // 기본 소화기 생성 (빈 오브젝트)
-            var obj = new GameObject("Extinguisher_Runtime");
-            extinguisher = obj.AddComponent<ExtinguisherItem>();
-            
-            // 기본 컴포넌트 추가
-            var rb = obj.AddComponent<Rigidbody>();
-            rb.isKinematic = true;
-            
-            var controller = obj.AddComponent<ExtinguisherController>();
-            extinguisher.controller = controller;
-
-            Debug.LogWarning("[ExtinguisherHelper] No prefab provided, created basic extinguisher!");
+            go = new GameObject("Extinguisher_Runtime");
+            var rb = go.AddComponent<Rigidbody>(); rb.isKinematic = true;
+            ctrl = go.AddComponent<ExtinguisherController>();
+            item = go.AddComponent<ExtinguisherItem>();
         }
 
-        // 모드 진입
-        bool success = player.EnterExtinguisherMode(extinguisher);
-
-        if (!success)
+        if (!item || !ctrl)
         {
-            // 실패 시 소화기 파괴
-            Object.Destroy(extinguisher.gameObject);
+            Debug.LogError("[ExtinguisherHelper] Missing ExtinguisherItem/Controller after setup");
+            if (go) Object.Destroy(go);
+            return false;
+        }
+        item.controller = ctrl;
+
+        // 2) 플레이어 모드 진입 (우리가 추가한 오버로드)
+        bool ok = player.EnterExtinguisherMode(item);
+        if (!ok)
+        {
+            Object.Destroy(go);
             return false;
         }
 
-        // 자동 파괴 태그 설정
-        if (autoDestroy)
-        {
-            extinguisher.gameObject.name += "_AutoDestroy";
-        }
+        // 3) 자동 파괴 표시(옵션)
+        if (autoDestroy) go.name += "_AutoDestroy";
 
         Debug.Log($"[ExtinguisherHelper] Entered mode! (AutoDestroy: {autoDestroy})");
         return true;
     }
+
 
     /// <summary>
     /// 소화기 모드 해제
@@ -137,7 +132,8 @@ public static class ExtinguisherHelper
     /// </summary>
     public static void EnterModeWithTimer(PlayerController player, GameObject extinguisherPrefab, float durationSeconds)
     {
-        if (EnterMode(player, extinguisherPrefab, false))
+        // 주의: autoDestroy를 true로 설정해야 타이머 종료 시 자동 파괴됨
+        if (EnterMode(player, extinguisherPrefab, true))
         {
             // 코루틴 시작을 위한 MonoBehaviour 필요
             var helper = player.gameObject.AddComponent<ExtinguisherTimerHelper>();
@@ -162,6 +158,7 @@ internal class ExtinguisherTimerHelper : MonoBehaviour
         
         if (player && player.IsInExtinguisherMode)
         {
+            // 타이머 종료 시 항상 파괴 (autoDestroy를 true로 설정했으므로)
             ExtinguisherHelper.ExitMode(player, true);
             Debug.Log($"[ExtinguisherHelper] Timer expired! ({duration}s)");
         }

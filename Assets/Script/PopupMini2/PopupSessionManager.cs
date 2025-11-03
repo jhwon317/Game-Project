@@ -43,12 +43,12 @@ namespace PopupMini
 
             var def = req.Definition;
 
-            // ---- ¼¼¼Ç ¿É¼Ç º´ÇÕ ----
+            // ---- ì„¸ì…˜ ì˜µì…˜ ë³‘í•© ----
             var sess = req.SessionOverride;
             if (!sess.Modal) { sess.Modal = def.Modal; sess.BackdropClosable = def.BackdropClosable; }
             if (!(sess.TimeoutSec > 0f) && def.TimeoutSec > 0f) sess.TimeoutSec = def.TimeoutSec;
 
-            // ---- ÀÔ·Â °ÔÀÌÆ®(¸ğ´Ş) ----
+            // ---- ì…ë ¥ ê²Œì´íŠ¸(ëª¨ë‹¬) ----
             if (sess.Modal)
             {
                 _gate = InputModalGate.Acquire(new InputModalGate.Options
@@ -59,39 +59,39 @@ namespace PopupMini
                 });
             }
 
-            // ---- (¼±ÅÃ) UI ¿À¹ö¶óÀÌµå Àû¿ë ----
+            // ---- (ì„ íƒ) UI ì˜¤ë²„ë¼ì´ë“œ ë°±ì—… ----
             var bakHost = SaveHost(Host);
             ApplyUIOverride(Host, req.UIOverride);
 
             try
             {
-                // ---- ·¹ÀÌ¾Æ¿ô(ÆĞµù/½ºÄÉÀÏ) ¼±Àû¿ë ----
+                // ---- ë ˆì´ì•„ì›ƒ(í¼ì¦/ì»¨í…ì¸ ) ì¤€ë¹„ ----
                 if (!Host.ContentRoot) return PuzzleResult.Error("host.content:null");
                 if (!Host.Viewport) return PuzzleResult.Error("host.viewport:null");
 
                 _auto?.ApplyBeforeOpen();
 
-                // ---- ÆĞ³Î Áï½Ã ON(ÄÚ·çÆ¾ È¸ÇÇ) ----
+                // ---- íŒ¨ë„ í˜ì´ë“œ ON(ì½”ë£¨í‹´ íšŒí”¼) ----
                 Host.Show(instant: true);
 
-                // ---- ÆÛÁñ ÀÎ½ºÅÏ½º ----
+                // ---- í¼ì¦ ì¸ìŠ¤í„´ìŠ¤ ----
                 _inst = _factory.Create(def);
                 if (_inst.Root == null) return PuzzleResult.Error("create_failed");
                 if (!_inst.Cam) return PuzzleResult.Error("prefab.camera:null");
                 if (_inst.Controller == null) return PuzzleResult.Error("prefab.controller:null");
 
-                // ---- ÇÁ¸®ÆÕ ±âº» Args ----
+                // ---- í”„ë¦¬íŒ¹ ê¸°ë³¸ Args ----
                 var cfg = _inst.Root.GetComponentInChildren<PuzzlePrefabConfig>(true);
                 if (string.IsNullOrEmpty(req.Args) && cfg && cfg.defaultArgsJson)
                     req.Args = cfg.defaultArgsJson.text;
 
-                // ---- ¹ÙÀÎµù(¿©±â¼­¸¸ ÆÛÁñÄ· È°¼º) ----
+                // ---- ë°”ì¸ë”©(ì—¬ê¸°ì„œë¶€í„° ë¯¸ë‹ˆì¹´ë©”ë¼ í™œì„±) ----
                 _viewport.Bind(_inst.Cam, def);
 
-                // ---- Ä«¸Ş¶ó ÀÚµ¿ ÇÁ·¹ÀÌ¹Ö(¿É¼Ç) ----
+                // ---- ì¹´ë©”ë¼ ìë™ ë¦¬í”„ë ˆì´ë°(ì˜µì…˜) ----
                 _auto?.ApplyAfterBind(_inst);
 
-                // ---- ¿Ï·á ´ë±â ----
+                // ---- ì™„ë£Œ ëŒ€ê¸° ----
                 var tcs = new TaskCompletionSource<PuzzleResult>(TaskCreationOptions.RunContinuationsAsynchronously);
                 using var linked = CancellationTokenSource.CreateLinkedTokenSource(externalCt);
                 _cts = linked;
@@ -101,7 +101,7 @@ namespace PopupMini
                 if (timer && sess.TimeoutSec > 0f)
                 {
                     timer.gameObject.SetActive(true);
-                    timer.StartCountdown(sess.TimeoutSec, _cts.Token); // unscaledDeltaTime »ç¿ë ±ÇÀå
+                    timer.StartCountdown(sess.TimeoutSec, _cts.Token); // unscaledDeltaTime ê¸°ë°˜ íƒ€ì´ë¨¸
                 }
 
                 using var _reg = _cts.Token.Register(() =>
@@ -174,7 +174,7 @@ namespace PopupMini
             if (ov.Viewport) host.Viewport = ov.Viewport;
             if (ov.CanvasGroup) host.CanvasGroup = ov.CanvasGroup;
 
-            // ÀÚµ¿ º¸Á¤
+            // ìë™ ë³µêµ¬
             if (host.PanelRoot && !host.CanvasGroup)
                 host.CanvasGroup = host.PanelRoot.GetComponent<CanvasGroup>() ?? host.PanelRoot.AddComponent<CanvasGroup>();
             if (!host.ContentRoot && host.PanelRoot)

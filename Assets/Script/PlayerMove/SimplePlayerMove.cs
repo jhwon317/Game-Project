@@ -31,6 +31,14 @@ public class SimplePlayerMove : MonoBehaviour
     // Encumbrance 연동
     EncumbranceComponent _encum;
 
+    // ===== Extinguisher =====
+    [Header("Extinguisher")]
+    public ExtinguisherController extinguisher;   // 분사 컨트롤러 (자식에 있어도 OK)
+    public string isExtModeBool = "IsExtinguisherMode"; // 애니메이터 파라미터명 (옵셔널)
+    public string sprayBool = "Spray";               // 분사 중 표시 (옵셔널)
+    bool _extMode;      // 소화기 모드 on/off (핀 퍼즐 성공 시 EnterExtinguisherMode() 호출)
+    bool _spraying;     // 현재 분사 유지 중
+
     void Awake()
     {
         _cc = GetComponent<CharacterController>();
@@ -39,6 +47,7 @@ public class SimplePlayerMove : MonoBehaviour
 
         _encum = GetComponent<EncumbranceComponent>();
         _interactor = GetComponent<PlayerInteractor>(); // PlayerController의 흐름과 동일하게 E 처리
+        if (!extinguisher) extinguisher = GetComponentInChildren<ExtinguisherController>(true);
     }
 
     void Update()
@@ -128,6 +137,55 @@ public class SimplePlayerMove : MonoBehaviour
         Vector3 motion = horizontal * Time.deltaTime + _vel * Time.deltaTime;
         _cc.Move(motion);
 
+        // --- Extinguisher: 분사 처리 ---
+        if (_extMode && extinguisher)
+        {
+            bool pressed = false, released = false;
+
+#if ENABLE_INPUT_SYSTEM
+            // 새 입력 시스템(우클릭/패드 RT) + 레거시 입력(동시에 지원)
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+            if (mouse != null)
+            {
+                pressed |= mouse.rightButton.isPressed;
+                released |= mouse.rightButton.wasReleasedThisFrame;
+            }
+            var pad = UnityEngine.InputSystem.Gamepad.current;
+            if (pad != null)
+            {
+                pressed |= pad.rightTrigger.ReadValue() > 0.3f;
+                released |= pad.rightTrigger.wasReleasedThisFrame;
+            }
+#endif
+            // 레거시 입력도 함께 허용
+            pressed |= Input.GetMouseButton(1) || Input.GetButton("Fire2");
+            released |= Input.GetMouseButtonUp(1) || Input.GetButtonUp("Fire2");
+
+            if (pressed)
+            {
+                extinguisher.TrySpraying(Time.deltaTime);
+                if (!_spraying)
+                {
+                    _spraying = true;
+                    if (animator && !string.IsNullOrEmpty(sprayBool)) animator.SetBool(sprayBool, true);
+                }
+            }
+            else if (released)
+            {
+                extinguisher.StopSpraying();
+                if (_spraying)
+                {
+                    _spraying = false;
+                    if (animator && !string.IsNullOrEmpty(sprayBool)) animator.SetBool(sprayBool, false);
+                }
+            }
+            else if (_spraying)
+            {
+                // 구현이 매 프레임 호출을 요구하면 유지
+                extinguisher.TrySpraying(Time.deltaTime);
+            }
+        }
+
         // --- 애니메이션 파라미터 ---
         if (animator)
         {
@@ -135,6 +193,25 @@ public class SimplePlayerMove : MonoBehaviour
             int speedState = 0;                                    // 0=Idle
             if (hasMoveInput) speedState = applySprint ? 2 : 1;    // 1=Walk, 2=Run
             animator.SetInteger(speedInt, speedState);
+            if (!string.IsNullOrEmpty(isExtModeBool)) animator.SetBool(isExtModeBool, _extMode);
         }
+    }
+
+    // ===== Extinguisher public API =====
+    public void EnterExtinguisherMode()
+    {
+        _extMode = true;
+        if (animator && !string.IsNullOrEmpty(isExtModeBool)) animator.SetBool(isExtModeBool, true);
+        Debug.Log("Entered Extinguisher Mode");
+        // 이동/회전/스프린트는 기존 로직 그대로 유지
+    }
+
+    public void ExitExtinguisherMode()
+    {
+        _extMode = false;
+        if (_spraying && extinguisher) extinguisher.StopSpraying();
+        _spraying = false;
+        if (animator && !string.IsNullOrEmpty(isExtModeBool)) animator.SetBool(isExtModeBool, false);
+        if (animator && !string.IsNullOrEmpty(sprayBool)) animator.SetBool(sprayBool, false);
     }
 }

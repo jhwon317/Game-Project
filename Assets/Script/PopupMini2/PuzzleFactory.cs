@@ -42,29 +42,47 @@ namespace PopupMini
 
         public PuzzleInstance Create(PuzzleDefinition def)
         {
-            if (!def || !def.Prefab) { Debug.LogError("[PuzzleFactory] Definition/Prefab missing"); return default; }
+            if (!def || !def.Prefab) 
+            { 
+                Debug.LogError("[PuzzleFactory] Definition/Prefab missing"); 
+                return default; 
+            }
 
             var go = Object.Instantiate(def.Prefab);
 
-            // ¡Ú ·¹ÀÌ¾î ºĞ¸®(¿É¼Ç)
+            // ì „ìš© ë ˆì´ì–´ ë¶„ë¦¬(ì˜µì…˜)
             var layer = GetLayer();
             if (layer >= 0) PuzzleLayerUtil.SetLayerRecursive(go, layer);
 
-            // ¡Ú ÇÊ¼ö ±¸¼º ¿ä¼Ò Ã£±â
+            // í•„ìˆ˜ ì»´í¬ë„ŒíŠ¸ ì°¾ê¸°
             var cam = go.GetComponentInChildren<Camera>(true);
             var ctrl = go.GetComponentInChildren<IPuzzleController>(true);
 
-            if (!cam) { Debug.LogError("[PuzzleFactory] Camera not found in prefab"); Object.Destroy(go); return default; }
-            if (ctrl == null) { Debug.LogError("[PuzzleFactory] IPuzzleController not found in prefab"); Object.Destroy(go); return default; }
+            if (!cam) 
+            { 
+                Debug.LogError("[PuzzleFactory] Camera not found in prefab"); 
+                Object.Destroy(go); 
+                return default; 
+            }
+            if (ctrl == null) 
+            { 
+                Debug.LogError("[PuzzleFactory] IPuzzleController not found in prefab"); 
+                Object.Destroy(go); 
+                return default; 
+            }
 
 #if UNITY_RENDER_PIPELINE_UNIVERSAL
             var urp = cam.GetComponent<UniversalAdditionalCameraData>();
-            if (urp) { urp.renderType = CameraRenderType.Base; urp.cameraStack.Clear(); }
+            if (urp) 
+            { 
+                urp.renderType = CameraRenderType.Base; 
+                urp.cameraStack.Clear(); 
+            }
 #endif
-            // ¡Ú ¸ŞÀÎ È­¸é µ¤Áö ¾Êµµ·Ï ±âº»Àº ²¨µĞ´Ù
+            // ì¹´ë©”ë¼ëŠ” í™”ë©´ ë Œë”ë§ ì•ˆ í•˜ë„ë¡ ê¸°ë³¸ê°’ ì„¤ì •
             cam.enabled = false;
             cam.targetTexture = null;
-            cam.tag = "Untagged"; // MainCamera ±İÁö
+            cam.tag = "Untagged"; // MainCamera ì¶©ëŒ ë°©ì§€
 
             if (def.ShadowsOff)
             {

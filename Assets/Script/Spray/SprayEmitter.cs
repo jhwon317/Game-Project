@@ -61,8 +61,8 @@ public class SprayEmitter : MonoBehaviour
     /// </summary>
     public void Spray(Vector3 direction, float deltaTime)
     {
+        Debug.Log("SprayEmitter Spray called");
         if (!nozzle) return;
-
         // VFX 시작
         if (sprayVfx && !sprayVfx.isPlaying) sprayVfx.Play();
 

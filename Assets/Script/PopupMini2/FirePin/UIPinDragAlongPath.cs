@@ -1,4 +1,4 @@
-// Assets/Script/PopupMini2/FirePin/UIPinDraggableHover.cs
+// Assets/Script/PopupMini2/FirePin/UIPinDragAlongPath.cs
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,8 +12,8 @@ namespace PopupMini.Sample
         IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
         [Header("Axis (in parent space)")]
-        public Vector2 dragAxisInParent = Vector2.right; // (-1,0) = øﬁ¬ ¿∏∑Œ ¥Á±Ë
-        public bool oneWay = true;        // true∏È 0°Ê+max∏∏, false∏È -max°Í+max
+        public Vector2 dragAxisInParent = Vector2.right; // (-1,0) = ÏôºÏ™ΩÏúºÎ°ú ÎãπÍπÄ
+        public bool oneWay = true;        // trueÎ©¥ 0~+maxÎßå, falseÎ©¥ -max~+max
         [Min(1f)] public float maxDistance = 120f;
         [Min(1f)] public float successDistance = 100f;
 
@@ -131,14 +131,14 @@ namespace PopupMini.Sample
 
         void Update()
         {
-            // Ω∫≥¿πÈ
+            // Î¶¨ÌÑ¥ Ïï†ÎãàÎ©îÏù¥ÏÖò
             if (!_finished && !_dragging && snapBackOnRelease && !Mathf.Approximately(_t, 0f))
             {
                 float step = returnSpeed * Time.unscaledDeltaTime;
                 ApplyDistance(Mathf.MoveTowards(_t, 0f, step));
             }
 
-            // Hover ∫∏∞£
+            // Hover Ìö®Í≥º
             if (targetGraphic)
             {
                 var cur = targetGraphic.color;

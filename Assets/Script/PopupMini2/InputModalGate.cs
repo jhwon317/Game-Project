@@ -3,13 +3,15 @@ using UnityEngine;
 
 namespace PopupMini
 {
-    /// <summary>¸ğ´Ş µ¿¾È Ä¿¼­/Àá±İ/¸Ê ÀüÈ¯ µîÀ» Àá±ñ ¹Ù²Ù°í º¹±¸ÇÏ´Â °£´Ü Gate.</summary>
+    /// <summary>
+    /// ëª¨ë‹¬ íŒì—… ì‹œ ì»¤ì„œ/ì…ë ¥ë§µ ì „í™˜ì„ ìœ„í•´ ìƒíƒœë¥¼ ë°”ê¾¸ê³  ë³µì›í•˜ëŠ” ì¼íšŒìš© Gate
+    /// </summary>
     public class InputModalGate : IDisposable
     {
         public struct Options
         {
-            public string GameplayMap;  // »ç¿ë ¾ÈÇØµµ µÊ(ÈÅ¸¸)
-            public string UIMap;
+            public string GameplayMap;  // íŒì—… í™œì„±í™” ì‹œ ë¹„í™œì„±í™”í•  ë§µ(í”Œë ˆì´)
+            public string UIMap;        // íŒì—… í™œì„±í™” ì‹œ í™œì„±í™”í•  ë§µ(UI)
             public bool ShowCursor;
         }
 
@@ -31,13 +33,22 @@ namespace PopupMini
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
-            // ½ÇÁ¦ InputActionMap ÀüÈ¯Àº ÇÁ·ÎÁ§Æ®¿¡ ¸ÂÃç Ãß°¡ÇÏ¼¼¿ä.
+            
+            // TODO: InputActionMap ì „í™˜ì€ í”„ë¡œì íŠ¸ì— ë§ê²Œ ì¶”ê°€í•˜ì„¸ìš”.
+            // ì˜ˆì‹œ:
+            // if (!string.IsNullOrEmpty(opt.GameplayMap))
+            //     InputManager.DisableMap(opt.GameplayMap);
+            // if (!string.IsNullOrEmpty(opt.UIMap))
+            //     InputManager.EnableMap(opt.UIMap);
         }
 
         public void Dispose()
         {
             Cursor.visible = _prevCursorVisible;
             Cursor.lockState = _prevLock;
+            
+            // TODO: InputActionMap ë³µì›
+            // InputManager.RestorePreviousMaps();
         }
     }
 }

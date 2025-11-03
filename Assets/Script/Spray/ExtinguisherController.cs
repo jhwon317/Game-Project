@@ -52,6 +52,7 @@ public class ExtinguisherController : MonoBehaviour
     /// </summary>
     public void TrySpraying(float deltaTime)
     {
+        Debug.Log("[ExtinguisherController] TrySpraying called");
         if (!CanSpray || !emitter || !player)
         {
             StopSpraying();
@@ -66,6 +67,7 @@ public class ExtinguisherController : MonoBehaviour
                 sprayLoop.Play();
         }
 
+        Debug.Log("[ExtinguisherController] Spraying...");
         // 실제 분사 (SprayEmitter에게 위임)
         emitter.Spray(player.forward, deltaTime);
 

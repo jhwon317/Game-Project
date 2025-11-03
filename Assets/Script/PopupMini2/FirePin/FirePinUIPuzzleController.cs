@@ -11,11 +11,11 @@ namespace PopupMini.Sample
         public event Action<PopupMini.PuzzleResult> Completed;
 
         [Header("Wiring")]
-        public Camera puzzleCamera;          // ÆÛÁñ Äµ¹ö½º°¡ World/ScreenSpaceCamera¸é worldCamera·Î ÁöÁ¤
+        public Camera puzzleCamera;          // ë§Œì•½ ìº”ë²„ìŠ¤ê°€ World/ScreenSpaceCameraë©´ worldCameraë¡œ í• ë‹¹
         public Canvas puzzleCanvas;
 
         [Header("Pin")]
-        public UIPinDraggableHover pin;      // ¡ç ÀÌ°Å ÇÏ³ª¸¸ ¿¬°á
+        public UIPinDraggableHover pin;      // í•€ ì´ê±¸ í•˜ë‚˜ë§Œ ì”€
 
         [Header("SFX (optional)")]
         public AudioSource sfx;
@@ -48,7 +48,7 @@ namespace PopupMini.Sample
                 return;
             }
 
-            // ÀÌº¥Æ® ¹ÙÀÎµù
+            // ì´ë²¤íŠ¸ ë°”ì¸ë”©
             pin.ResetState();
             pin.OnGrab += HandleGrab;
             pin.OnRelease += HandleRelease;
@@ -75,7 +75,8 @@ namespace PopupMini.Sample
         void HandleRelease() { if (!_finished && sfx && sfxRelease) sfx.PlayOneShot(sfxRelease); }
         void HandleSuccess()
         {
-            if (_finished) return; if (sfx && sfxSuccess) sfx.PlayOneShot(sfxSuccess);
+            if (_finished) return; 
+            if (sfx && sfxSuccess) sfx.PlayOneShot(sfxSuccess);
             SafeComplete(PopupMini.PuzzleResult.Ok("{\"rewards\":[{\"id\":\"extinguisher\",\"count\":1}]}"));
         }
 

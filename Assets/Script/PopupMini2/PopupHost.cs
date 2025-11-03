@@ -7,10 +7,10 @@ namespace PopupMini
     public class PopupHost : MonoBehaviour
     {
         [Header("Wiring")]
-        public GameObject PanelRoot;    // ÀüÃ¼ ¿À¹ö·¹ÀÌ(¹è°æ)
-        public RectTransform ContentRoot;  // Ã¢ ¿µ¿ª(ÆĞµù/½ºÄÉÀÏ ´ë»ó)
+        public GameObject PanelRoot;    // ì „ì²´ íŒì—… ë£¨íŠ¸(íŒ¨ë„)
+        public RectTransform ContentRoot;  // ì°½ ë‚´ìš©(í¼ì¦/ì»¨í…ì¸  ë“¤ì–´ê°)
         public CamToRawImage Viewport;     // RawImage + CamToRawImage
-        public CanvasGroup CanvasGroup;  // ÆäÀÌµå
+        public CanvasGroup CanvasGroup;  // í˜ì´ë“œ
 
         void Reset()
         {
@@ -33,7 +33,7 @@ namespace PopupMini
             if (!PanelRoot) return;
             EnsureCanvasGroup();
 
-            // Host ºñÈ°¼º/°»½Å ºÒ°¡ÀÏ ¶§: Áï½Ã Ã³¸®(ÄÚ·çÆ¾ ±İÁö)
+            // Host ë¹„í™œì„±/íŒŒê´´ ë¶ˆê°€ëŠ¥ ì‹œ: ì¦‰ì‹œ ì²˜ë¦¬(ì½”ë£¨í‹´ ë¶ˆê°€)
             if (!isActiveAndEnabled)
             {
                 PanelRoot.SetActive(true);
