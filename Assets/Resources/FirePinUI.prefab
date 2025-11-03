@@ -120,7 +120,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   puzzleCamera: {fileID: 520005972072673116}
   puzzleCanvas: {fileID: 181762115663216299}
-  pin: {fileID: 0}
+  pin: {fileID: 7789280894311337535}
   sfx: {fileID: 0}
   sfxGrab: {fileID: 0}
   sfxRelease: {fileID: 0}

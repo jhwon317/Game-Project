@@ -1,48 +1,89 @@
 using UnityEngine;
 
-public class ThrowableBox : MonoBehaviour, IInteractable
+/// <summary>
+/// ë˜ì§ˆ ìˆ˜ ìˆëŠ” ìƒì. ë“¤ê³  ì˜®ê¸°ë‹¤ê°€ ë˜ì§€ëŠ” ìš©ë„.
+/// </summary>
+public class ThrowableBox : MonoBehaviour, IInteractable, IHoldable
 {
-    private Rigidbody rb;
-    private Collider boxCollider;
-    private Transform originalParent;
-    private Vector3 originalScale;
+    [Header("Physics")]
+    public Rigidbody rb;
+    public Collider boxCollider;
+
+    [Header("Speed Modifier")]
+    [Tooltip("ì´ ë¬¼ê±´ì„ ë“¤ì—ˆì„ ë•Œ ì´ë™ì†ë„ ë°°ìœ¨ (1.0 = ë³€í™”ì—†ìŒ)")]
+    [Range(0.1f, 1f)] public float speedModifier = 1f;
+
+    private Transform _originalParent;
+    private Vector3 _originalScale;
+    private bool _isHeld = false;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        boxCollider = GetComponent<Collider>();
-        originalParent = transform.parent;
-        originalScale = transform.localScale;
+        if (!rb) rb = GetComponent<Rigidbody>();
+        if (!boxCollider) boxCollider = GetComponent<Collider>();
+        _originalParent = transform.parent;
+        _originalScale = transform.localScale;
     }
 
-    // [ÇÙ½É ¼öÁ¤!] ÀÌÁ¦ Æ¯Á¤ ½ºÅ©¸³Æ® ÀÌ¸§ ´ë½Å, "PickUpObject"¶ó´Â '¸í·É¾î'¸¦ ¹æ¼ÛÇÔ
+    #region IInteractable
+    public Transform GetTransform() => transform;
+    public void SetHighlighted(bool on) { /* í•˜ì´ë¼ì´íŠ¸ êµ¬í˜„ */ }
+
     public void OnInteract(GameObject interactor)
     {
-        // interactor(ÇÃ·¹ÀÌ¾î)¿¡°Ô "PickUpObject"¶ó´Â ¸Ş½ÃÁö¸¦ º¸³»°í,
-        // 'this'(³ª ÀÚ½Å, Áï ÀÌ ThrowableBox)¸¦ µ¥ÀÌÅÍ·Î ÇÔ²² º¸³¿
+        // PlayerControllerì˜ PickUpObject í˜¸ì¶œ
         interactor.SendMessage("PickUpObject", this, SendMessageOptions.DontRequireReceiver);
     }
+    #endregion
 
-    public void BePickedUp(Transform holder)
+    #region IHoldable
+    public float GetSpeedModifier()
     {
-        rb.isKinematic = true;
-        boxCollider.enabled = false;
-        transform.SetParent(holder);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
-        transform.localScale = originalScale;
+        // HeavyObjectê°€ ìˆìœ¼ë©´ ê·¸ê±¸ ìš°ì„  ì‚¬ìš©
+        var heavy = GetComponent<HeavyObject>();
+        if (heavy) return heavy.speedModifier;
+        return speedModifier;
     }
 
+    public void OnPickedUp(Transform holdPoint)
+    {
+        _isHeld = true;
+        rb.isKinematic = true;
+        boxCollider.enabled = false;
+
+        transform.SetParent(holdPoint);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = _originalScale;
+    }
+
+    public void OnPutDown(Vector3 dropPosition, Vector3 playerForward)
+    {
+        _isHeld = false;
+        transform.SetParent(_originalParent);
+        transform.localScale = _originalScale;
+
+        rb.isKinematic = false;
+        boxCollider.enabled = true;
+
+        // ë˜ì§€ê¸° (playerForward ë°©í–¥ìœ¼ë¡œ í˜ ê°€í•´ì§)
+        // dropPositionì€ ì‚¬ìš© ì•ˆí•¨ (ë¬¼ë¦¬ë¡œ ìì—°ìŠ¤ëŸ½ê²Œ ë–¨ì–´ì§)
+        rb.AddForce(playerForward, ForceMode.Impulse);
+    }
+    #endregion
+
+    #region Legacy Support (ê¸°ì¡´ ì½”ë“œ í˜¸í™˜)
+    public void BePickedUp(Transform holder) => OnPickedUp(holder);
     public void BeThrown(Vector3 throwForce)
     {
-        transform.SetParent(originalParent);
-        transform.localScale = originalScale;
+        _isHeld = false;
+        transform.SetParent(_originalParent);
+        transform.localScale = _originalScale;
         rb.isKinematic = false;
         boxCollider.enabled = true;
         rb.AddForce(throwForce, ForceMode.Impulse);
     }
+    #endregion
 
-    public Transform GetTransform() { return transform; }
-    public void SetHighlighted(bool on) { /* ÇÏÀÌ¶óÀÌÆ® ·ÎÁ÷ */ }
+    public bool IsHeld => _isHeld;
 }
-
